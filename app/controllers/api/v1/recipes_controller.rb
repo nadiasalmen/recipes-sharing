@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::RecipesController < ApplicationController
   before_action :set_recipe, only: [:show, :update, :destroy]
 
@@ -11,16 +13,16 @@ class Api::V1::RecipesController < ApplicationController
   end
 
   def create
-    actor = Recipe.new(actor_params)
-    if actor.save
-      render json: actor, status: :created
+    recipe = Recipe.new(recipe_params)
+    if recipe.save
+      render json: recipe, status: :created
     else
-      render json: actor.errors, status: :unprocessable_entity
+      render json: recipe.errors, status: :unprocessable_entity
     end
   end
 
   def update
-    if @recipe.update(actor_params)
+    if @recipe.update(recipe_params)
       render json: @recipe
     else
       render json: @recipe.errors, status: :unprocessable_entity
@@ -34,7 +36,7 @@ class Api::V1::RecipesController < ApplicationController
 
   private
 
-  def set_actor
+  def set_recipe
     @recipe = Recipe.find_by(id: params[:id])
     unless @recipe
       render json: { error: 'Recipe not found' }, status: :not_found
