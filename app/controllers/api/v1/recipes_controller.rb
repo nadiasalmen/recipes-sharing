@@ -5,19 +5,19 @@ class Api::V1::RecipesController < ApplicationController
   before_action :set_recipe, only: [:update]
 
   def index
-    recipes = Recipe.all
-    render json: recipes
+    @recipes = Recipe.all
+    render json: @recipes
   end
 
   def create
     user_id = user_id(request.headers['Authorization'].split(' ').last)
-    recipe = Recipe.new(recipe_params.except(:image))
-    attach_image(recipe, params[:recipe][:image]) if params[:recipe][:image]
-    recipe.user_id = user_id.to_i if user_id
-    if recipe.save
-      render json: recipe, status: :created
+    @recipe = Recipe.new(recipe_params.except(:image))
+    ImageAttacher.new(recipe: @recipe, base64_image: recipe_params[:image]).call if recipe_params[:image]
+    @recipe.user_id = user_id.to_i if user_id
+    if @recipe.save
+      render json: @recipe, status: :created
     else
-      render json: recipe.errors, status: :unprocessable_entity
+      render json: @recipe.errors, status: :unprocessable_entity
     end
   end
 
@@ -46,23 +46,5 @@ class Api::V1::RecipesController < ApplicationController
   def user_id(token)
     decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key!, true, { algorithm: 'HS256' })
     decoded_token[0]['sub']
-  end
-
-  def attach_image(recipe, base64_image)
-    decoded_image = Base64.decode64(base64_image)
-    temp_file = Tempfile.new
-    temp_file.binmode
-    temp_file.write(decoded_image)
-    temp_file.rewind
-    blob = ActiveStorage::Blob.create_and_upload!(
-      io: temp_file,
-      filename: 'your_image_name.jpg',
-      content_type: 'image/jpeg'
-    )
-    recipe.image.attach(blob)
-    temp_file.close
-    temp_file.unlink
-
-    recipe
   end
 end
