@@ -6,6 +6,19 @@ class Recipe < ApplicationRecord
   validates :title, :description, :image, :ingredients, :steps, presence: true
   validates :title, length: { minimum: 5 }
   validates :description, length: { minimum: 20 }
-  validates :image, attached: true, content_type: ['image/png', 'image/jpg', 'image/jpeg']
-  validates :image, size: { less_than: 5.megabytes }
+  validate :image_format_and_size
+
+  def image_url
+    image.attached? ? image.url : :nil
+  end
+
+  private
+
+  def image_format_and_size
+    return unless image.attached?
+
+    errors.add(:image, 'is missing') unless image.attached?
+    errors.add(:image, 'is not an image') unless image.content_type.in?(%('image/jpeg image/png'))
+    errors.add(:image, 'is too big') if image.byte_size > 5.megabytes
+  end
 end
