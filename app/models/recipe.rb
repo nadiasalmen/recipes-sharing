@@ -8,6 +8,10 @@ class Recipe < ApplicationRecord
   validates :description, length: { minimum: 20 }
   validate :image_format_and_size
 
+  def image_url
+    image.attached? ? image.url : :nil
+  end
+
   private
 
   def image_format_and_size
