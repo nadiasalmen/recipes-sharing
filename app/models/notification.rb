@@ -13,7 +13,7 @@ class Notification < ApplicationRecord
         message: message,
         follower_id: follower.id
       }
-      ActionCable.server.broadcast "notifications_#{follower_id}", message_data
+      ActionCable.server.broadcast "notifications_#{follower.id}", message_data
     end
   end
 end
