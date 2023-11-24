@@ -12,6 +12,9 @@ Rails.application.routes.draw do
           registrations: 'api/v1/users/registrations'
         }
       resources :recipes, only: [:create, :index, :update]
+      resources :notifications, only: [:create]
     end
   end
+
+  mount ActionCable.server => '/cable'
 end
