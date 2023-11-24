@@ -15,6 +15,8 @@ class Api::V1::RecipesController < ApplicationController
     @recipe.user_id = user_id.to_i if user_id
     if @recipe.save
       AttachImageJob.perform_later(recipe: @recipe, base64_image: recipe_params[:image]) if recipe_params[:image]
+      NotifyNewRecipeJob.perform_later(recipe: @recipe)
+
       render json: @recipe, status: :created
     else
       render json: @recipe.errors, status: :unprocessable_entity
