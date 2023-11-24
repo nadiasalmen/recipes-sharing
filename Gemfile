@@ -6,11 +6,14 @@ ruby '3.0.1'
 gem 'rails', '~> 7.0.8'
 
 gem 'bootsnap', require: false
+gem 'daemons'
+gem 'delayed_job_active_record'
 gem 'devise'
 gem 'devise-jwt'
 gem 'dotenv-rails'
 gem 'google-cloud-storage', require: false
 gem 'jsonapi-serializer'
+gem 'mini_magick'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.0'
 gem 'rack-cors'
