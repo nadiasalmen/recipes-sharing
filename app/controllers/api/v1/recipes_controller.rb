@@ -12,9 +12,9 @@ class Api::V1::RecipesController < ApplicationController
   def create
     user_id = user_id(request.headers['Authorization'].split(' ').last)
     @recipe = Recipe.new(recipe_params.except(:image))
-    ImageAttacher.new(recipe: @recipe, base64_image: recipe_params[:image]).call if recipe_params[:image]
     @recipe.user_id = user_id.to_i if user_id
     if @recipe.save
+      AttachImageJob.perform_later(recipe: @recipe, base64_image: recipe_params[:image]) if recipe_params[:image]
       render json: @recipe, status: :created
     else
       render json: @recipe.errors, status: :unprocessable_entity

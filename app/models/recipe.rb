@@ -3,7 +3,7 @@ class Recipe < ApplicationRecord
   belongs_to :user
   has_one_attached :image
 
-  validates :title, :description, :image, :ingredients, :steps, presence: true
+  validates :title, :description, :ingredients, :steps, presence: true
   validates :title, length: { minimum: 5 }
   validates :description, length: { minimum: 20 }
   validate :image_format_and_size
